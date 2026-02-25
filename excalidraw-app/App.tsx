@@ -871,11 +871,7 @@ const ExcalidrawWrapper = () => {
 
           return (
             <div className="excalidraw-ui-top-right">
-              {excalidrawAPI?.getEditorInterface().formFactor === "desktop" && (
-                <ExcalidrawPlusPromoBanner
-                  isSignedIn={isExcalidrawPlusSignedUser}
-                />
-              )}
+              {/* Excalidraw Plus promo removed for self-hosted build */}
 
               {collabError.message && <CollabError collabError={collabError} />}
               <LiveCollaborationTrigger
