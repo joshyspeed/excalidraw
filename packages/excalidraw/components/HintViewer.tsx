@@ -236,39 +236,7 @@ const getHints = ({
   return null;
 };
 
-export const HintViewer = ({
-  appState,
-  isMobile,
-  editorInterface,
-  app,
-}: HintViewerProps) => {
-  const hints = getHints({
-    appState,
-    isMobile,
-    editorInterface,
-    app,
-  });
-
-  if (!hints) {
-    return null;
-  }
-
-  const hint = Array.isArray(hints)
-    ? hints.map((hint) => hint.replace(/\. ?$/, "")).join(", ")
-    : hints;
-
-  const hintJSX = hint.split(/(<kbd>[^<]+<\/kbd>)/g).map((part, index) => {
-    if (index % 2 === 1) {
-      const shortcutMatch =
-        part[0] === "<" && part.match(/^<kbd>([^<]+)<\/kbd>$/);
-      return <kbd key={index}>{shortcutMatch ? shortcutMatch[1] : part}</kbd>;
-    }
-    return part;
-  });
-
-  return (
-    <div className="HintViewer">
-      <span>{hintJSX}</span>
-    </div>
-  );
+export const HintViewer = (_props: HintViewerProps) => {
+  // Hints disabled for self-hosted build
+  return null;
 };
