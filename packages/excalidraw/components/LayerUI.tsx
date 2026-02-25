@@ -410,13 +410,7 @@ const LayerUI = ({
               editorInterface.formFactor === "phone",
               appState,
             )}
-            {!appState.viewModeEnabled &&
-              appState.openDialog?.name !== "elementLinkSelector" &&
-              // hide button when sidebar docked
-              (!isSidebarDocked ||
-                appState.openSidebar?.name !== DEFAULT_SIDEBAR.name) && (
-                <tunnels.DefaultSidebarTriggerTunnel.Out />
-              )}
+            {/* Sidebar trigger button hidden — search accessible via menu */}
             {shouldShowStats && (
               <Stats
                 app={app}

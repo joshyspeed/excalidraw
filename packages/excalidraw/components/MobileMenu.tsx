@@ -84,7 +84,7 @@ export const MobileMenu = ({
                 isMobile
                 penDetected={appState.penDetected}
               />
-              <DefaultSidebarTriggerTunnel.Out />
+              {/* Sidebar trigger button hidden */}
             </>
           ))}
         {appState.viewModeEnabled && (
