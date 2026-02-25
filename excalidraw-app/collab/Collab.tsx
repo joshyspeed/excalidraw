@@ -175,7 +175,7 @@ class Collab extends PureComponent<CollabProps, CollabState> {
 
         return {
           savedFiles: savedFiles.reduce(
-            (acc: Map<FileId, BinaryFileData>, id) => {
+            (acc: Map<FileId, BinaryFileData>, id: FileId) => {
               const fileData = addedFiles.get(id);
               if (fileData) {
                 acc.set(id, fileData);
@@ -185,7 +185,7 @@ class Collab extends PureComponent<CollabProps, CollabState> {
             new Map(),
           ),
           erroredFiles: erroredFiles.reduce(
-            (acc: Map<FileId, BinaryFileData>, id) => {
+            (acc: Map<FileId, BinaryFileData>, id: FileId) => {
               const fileData = addedFiles.get(id);
               if (fileData) {
                 acc.set(id, fileData);

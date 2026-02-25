@@ -184,7 +184,7 @@ export const saveFilesToHttpStorage = async ({
   await Promise.all(
     files.map(async ({ id, buffer }) => {
       try {
-        const payloadBlob = new Blob([buffer]);
+        const payloadBlob = new Blob([buffer as BlobPart]);
         const payload = await new Response(payloadBlob).arrayBuffer();
         await fetch(`${HTTP_STORAGE_BACKEND_URL}/files/${id}`, {
           method: "PUT",
@@ -265,7 +265,7 @@ const saveElementsToBackend = async (
   numberView.setUint32(0, sceneVersion, false);
   const sceneVersionBuffer = numberView.buffer;
   const payloadBlob = await new Response(
-    new Blob([sceneVersionBuffer, iv.buffer, ciphertext]),
+    new Blob([sceneVersionBuffer as BlobPart, iv.buffer as BlobPart, ciphertext as BlobPart]),
   ).arrayBuffer();
   const putResponse = await fetch(
     `${HTTP_STORAGE_BACKEND_URL}/rooms/${roomId}`,
@@ -290,7 +290,7 @@ const decryptElements = async (
   const ciphertext = data.ciphertext;
   const iv = data.iv;
 
-  const decrypted = await decryptData(iv, ciphertext, roomKey);
+  const decrypted = await decryptData(iv as Uint8Array<ArrayBuffer>, ciphertext, roomKey);
   const decodedData = new TextDecoder("utf-8").decode(
     new Uint8Array(decrypted),
   );
