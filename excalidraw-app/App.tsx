@@ -119,7 +119,7 @@ import {
   importUsernameFromLocalStorage,
 } from "./data/localStorage";
 
-import { loadFilesFromFirebase } from "./data/firebase";
+import { getStorageBackend } from "./data/config";
 import {
   LibraryIndexedDBAdapter,
   LibraryLocalStorageMigrationAdapter,
@@ -438,7 +438,7 @@ const ExcalidrawWrapper = () => {
       return;
     }
 
-    const loadImages = (
+    const loadImages = async (
       data: ResolutionType<typeof initializeScene>,
       isInitialLoad = false,
     ) => {
@@ -471,18 +471,21 @@ const ExcalidrawWrapper = () => {
           }, [] as FileId[]) || [];
 
         if (data.isExternalScene) {
-          loadFilesFromFirebase(
-            `${FIREBASE_STORAGE_PREFIXES.shareLinkFiles}/${data.id}`,
-            data.key,
-            fileIds,
-          ).then(({ loadedFiles, erroredFiles }) => {
-            excalidrawAPI.addFiles(loadedFiles);
-            updateStaleImageStatuses({
-              excalidrawAPI,
-              erroredFiles,
-              elements: excalidrawAPI.getSceneElementsIncludingDeleted(),
+          const storageBackend = await getStorageBackend();
+          storageBackend
+            .loadFilesFromStorageBackend(
+              `${FIREBASE_STORAGE_PREFIXES.shareLinkFiles}/${data.id}`,
+              data.key,
+              fileIds,
+            )
+            .then(({ loadedFiles, erroredFiles }) => {
+              excalidrawAPI.addFiles(loadedFiles);
+              updateStaleImageStatuses({
+                excalidrawAPI,
+                erroredFiles,
+                elements: excalidrawAPI.getSceneElementsIncludingDeleted(),
+              });
             });
-          });
         } else if (isInitialLoad) {
           if (fileIds.length) {
             LocalData.fileStorage
@@ -506,6 +509,7 @@ const ExcalidrawWrapper = () => {
     };
 
     initializeScene({ collabAPI, excalidrawAPI }).then(async (data) => {
+      await getStorageBackend();
       loadImages(data, /* isInitialLoad */ true);
       initialStatePromiseRef.current.promise.resolve(data.scene);
     });
@@ -846,33 +850,11 @@ const ExcalidrawWrapper = () => {
         onPointerUpdate={collabAPI?.onPointerUpdate}
         UIOptions={{
           canvasActions: {
+            loadScene: false,
+            saveToActiveFile: false,
             toggleTheme: true,
             export: {
               onExportToBackend,
-              renderCustomUI: excalidrawAPI
-                ? (elements, appState, files) => {
-                    return (
-                      <ExportToExcalidrawPlus
-                        elements={elements}
-                        appState={appState}
-                        files={files}
-                        name={excalidrawAPI.getName()}
-                        onError={(error) => {
-                          excalidrawAPI?.updateScene({
-                            appState: {
-                              errorMessage: error.message,
-                            },
-                          });
-                        }}
-                        onSuccess={() => {
-                          excalidrawAPI.updateScene({
-                            appState: { openDialog: null },
-                          });
-                        }}
-                      />
-                    );
-                  }
-                : undefined,
             },
           },
         }}
